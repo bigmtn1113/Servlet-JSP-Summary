@@ -1,5 +1,5 @@
 # 2. 서블릿 구현 및 실행
-서블릿을 사용하기 전에는 웹서버에서 외부 프로그램을 호출하고 수행 결과를 웹 브라우저로 전송하는 `CGI`(Common Gateway Interface)라는 기술을 사용한다.
+서블릿을 사용하기 전에는 웹서버에서 외부 프로그램을 호출하고 수행 결과를 웹 브라우저로 전송하는 `CGI(Common Gateway Interface)`라는 기술을 사용한다.
 그러나 CGI 기술은 동시 접속자가 많아질수록 처리 효율이 떨어지는 단점이 있다.
 
 그래서 서블릿이 등장하게 되었다.
@@ -63,12 +63,12 @@ WAS에서 제공하는 서블릿 API를 제대로 활용하려면 해당 문서�
 <br/>
 
 ### 2.2.2. 서블릿 클래스 간의 관계
-서블릿을 구현하려면 `HTTPServlet` 클래스를 반드시 상속받아야 한다.  
-HTTPServlet에는 웹상에서 클라이언트 요청이 있을 때 해당 서블릿을 실행하는 모든 조건이 포함되어 있다.  
-HTTPServlet을 상속받지 않은 클래스는 서블릿이라 할 수 없고, 실행 요청이 와도 실행되지 않는다.
+서블릿을 구현하려면 `HttpServlet` 클래스를 반드시 상속받아야 한다.  
+HttpServlet에는 웹상에서 클라이언트 요청이 있을 때 해당 서블릿을 실행하는 모든 조건이 포함되어 있다.  
+HttpServlet을 상속받지 않은 클래스는 서블릿이라 할 수 없고, 실행 요청이 와도 실행되지 않는다.
 
 **서블릿 프로그램의 클래스 계층 구조**  
-Servlet - GenericServlet - HTTPServlet
+Servlet - GenericServlet - HttpServlet
 
 - **Servlet 인터페이스**  
   init(), service(), destroy(), getServletConfig(), getServletInfo() 등 5개의 메소드를 선언하고 있다.  
@@ -78,19 +78,19 @@ Servlet - GenericServlet - HTTPServlet
   `Servlet` 인터페이스를 상속하여 서버단의 애플리케이션으로서 필요한 기능을 구현한 `추상 클래스`이다.  
   service() 메소드를 제외한 모든 메소드를 재정의하여 적절한 기능으로 구현하였다.
   
-- **HTTPServlet 클래스**  
+- **HttpServlet 클래스**  
   GenericServlet 클래스를 상속하여 service() 메소드를 재정의함으로써 `HTTP 프로토콜`에 알맞은 동작을 수행하도록 구현한 클래스이다.  
   service() 메소드에는 요청방식에 따라 doGet(), doPost() 등 메소드가 호출되도록 구현되어 있다.
 
 <br/>
 
 ### 2.2.3. 서블릿 작성
-HTTPServlet은 서블릿이 웹상에서 `HTTP 프로토콜`을 이용해 서비스를 처리하기 위해 반드시 상속받아야 하는 클래스이다.  
+HttpServlet은 서블릿이 웹상에서 `HTTP 프로토콜`을 이용해 서비스를 처리하기 위해 반드시 상속받아야 하는 클래스이다.  
 
 ```java
 import javax.servlet.http.*;
 
-public class FirstServlet extends HTTPServlet { ... }
+public class FirstServlet extends HttpServlet { ... }
 ```
 
 <br/>
@@ -144,3 +144,80 @@ client -(요청 정보)-> 웹서버 -> 서블릿 컨테이너 -> 최초요청 X 
 **서블릿 객체의 삭제**  
 서블릿 객체가 삭제되는 시점은 웹서버에서 웹 애플리케이션 서비스가 중지되는 시점이다.  
 이때 자원을 해제하는 destroy() 메소드가 호출되어 실행된다.
+
+<br/>
+
+## 2.3. 서블릿 실행
+/WEB-INF는 웹서버가 사용하는 파일이 들어있는 중요한 디렉터리이다.  
+따라서 외부에서 클라이언트가 곧바로 접근할 수 없도록 막아놓았다.  
+그래서 URL로 곧바로 접근할 수 없는 것이다.
+
+그렇다면 클라이언트가 어떻게 서블릿에 접근할 수 있을까?  
+`web.xml`과 `어노테이션(annotation)`을 이용하여 서블릿 접근 경로를 지정하면 된다.
+
+### 2.3.1. web.xml 설정을 통해 접근
+1. **실행할 서블릿을 웹서버에 등록**  
+  ```xml
+  <servlet>
+    <servlet-name></servlet-name>
+    <servlet-class></servlet-class>
+  </servlet>
+  ```
+  
+  - `<servlet>` 태그는 HttpServlet을 상속받고 있는 클래스를 web.xml에 등록할 때 사용한다.  
+  - `<servlet-name>` 태그는 등록하는 서블릿의 이름을 부여한다.  
+  - `<servlet-class>` 태그는 등록하는 서블릿의 실제 클래스 이름을 지정한다. 웹서버가 서블릿을 찾아갈 때 사용하는 정보다.
+    
+2. **`<servlet>`으로 등록한 서블릿을 실행할 URI 지정**
+  ```xml
+  <servlet-mapping>
+    <servlet-name></servlet-name>
+    <url-pattern></url-pattern>
+  </servlet-mapping>
+  ```
+  
+  - `<servlet-mapping>` 태그는 `<servlet>` 태그로 등록한 서블릿을 실행 요청할 때 사용할 URL을 지정하기 위해 사용한다.  
+  - `<servlet-name>` 태그는 실행할 서블릿 이름을 지정한다. `<servlet>` 태그에서 등록한 서블릿 이름으로 지정해야 한다.  
+  - `<url-pattern>` 태그는 서블릿을 실행할 때 사용할 URL을 지정한다.
+    이때 'http://서버주소:포트번호/웹 애플리케이션이름'까지는 생략하고 그 다음부터 지정한다.
+    현재 웹 애플리케이션을 찾아오기까지의 정보는 고정되어 있으므로 생략가능한 것이다.
+
+<br/>
+
+### 2.3.2. @WebServlet을 통해 접근
+어노테이션은 자바 주석문처럼 소스 안에 `@` 기호와 함께 사용된다.  
+주석문처럼 컴파일러에 정보를 알려주는 기능, 또는 자바프로그램 실행에 관한 내용을 설정하는 용도로 사용된다.  
+
+```java
+@WebServlet("/hello2")
+public class FirstServlet extends HttpServlet { ... }
+```
+
+`web.xml로 설정하는 방식`은 여러 개의 서블릿을 태그로 등록하기 때무에 전체적인 관리가 쉽다.  
+또한, URL 값이 변경되어야 할 때는 소스를 수정하지 않고서도 web.xml에서 쉽게 변경할 수 있다.
+
+`@WebServlet 설정 방식`은 설정파일 없이 자바 소스에서 쉽게 URL 패턴을 지정할 수 있다.  
+그러나 하나의 자바 소스에 하나의 서블릿 매핑만 가능하므로 전체적인 관리가 어려워 유지보수성이 떨어진다.  
+또한, URL 패턴값이 달라지면 소스를 수정해야 해서 다시 컴파일해야 한다.
+
+<br/>
+
+### 2.3.3. 요청방식에 따른 실행
+HttpServlet이 갖고 있는 두 가지 형태의 service() 메소드를 살펴보자.
+
+```java
+protected void service(HttpServletRequest req, HttpServletResponse resp)
+public void service(ServletRequest req, ServletResponse resp)
+```
+
+`첫 번째 service() 메소드`는 클라이언트의 실행요청에 따라 서로 다른 메소드를 호출하도록 구현되어 있다.  
+`두 번째 service() 메소드`는 서블릿 요청이 있을 때마다 실행되는 메소드이며 단순히 첫 번째 service()를 호출만 하는 역할을 수행한다.
+
+첫 번째 service() 메소드가 실행될 때 클라이언트가 `GET 방식`으로 요청했다면 `doGet()`을, `POST 방식`으로 요청했다면 `doPost()` 메소드를 호출한다.
+만약 요청방식에 따라 다르게 동작하게 하려면 service()를 재정의 하지 말고 doGet() 또는 doPost() 메소드 등을 재정의하면 된다.
+
+**service() 메소드를 재정의하지 않은 상태에서 GET 방식 요청이 들어왔을 경우 메소드 실행 순서**  
+1. **init(ServletConfig)** - GenericServlet
+2. **service(ServletRequest, ServletResponse)** - HttpServlet
+3. **service(HttpServletRequest, HttpServletResponse)** - HttpServlet
+4. **doGet(HttpServletRequest, HttpServletResponse)** - XXXServlet

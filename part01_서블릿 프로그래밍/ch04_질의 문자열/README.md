@@ -135,3 +135,72 @@ HTML에서 지원하는 `<form>`은 웹상에서 입력양식을 제공할 때 �
 
 **POST 방식으로 요청되는 상황**
 - `<form>` 태그에서 method 속성을 POST라 지정하는 경우
+
+<br/>
+
+## 4.4. 서블릿 작성
+### 4.4.1. 메소드 구현
+서블릿을 구현할 때 service() 메소드를 재정의했다면 재정의한 메소드가 실행되고  
+재정의하지 않았다면 HttpServlet의 service() 메소드가 실행된다.
+
+이때, service()는 요청방식에 따라 메소드를 호출한다.  
+GET 방식 요청은 `doGet()`, POST 방식 요청은 `doPost()`를 호출한다.
+
+<br/>
+
+### 4.4.2. 서블릿 연결
+QueryTestServlet.java
+```java
+@webServlet("/queryTest")
+public class QueryTestServlet extends HttpServlet {
+  @Override
+  public void doGet( ... ) throws ... { ... }
+  
+  @Override
+  public void doPost( ... ) throws ... { ... }
+}
+```
+
+member.html
+```HTML
+<form action="queryTest">
+  ...
+```
+
+QueryTestServlet이 속한 웹 애플리케이션의 경로는 /edu이고, @WebServlet 값을 "/queryTest"로 지정했다면  
+실제 지정되는 `URI`는 /edu/queryTest이다.
+
+member.html 파일이 속한 웹 애플리케이션의 경로는 /edu이고, 파일은 /(루트) 디렉터리에 있다고 가정하면  
+실제 요청되는 `URI`는 /edu/queryTest이다.
+
+따라서 member.html에서 전송 버튼을 누르면 QueryTestServlet이 실행된다.
+이때, GET 방식으로 요청하면 `doGet()`이, POST 방식으로 요청하면 `doPost()`가 호출된다.
+
+<br/>
+
+### 4.4.3. 질의 문자열 추출
+질의 문자열은 어떠한 방식으로 요청하든지 HTTP의 요청정보에 포함되어 전달된다.  
+HTTP의 요청정보에 대한 값을 추출하는 기능을 갖고 있는 객체는 `HttpServletRequest`이다.  
+이 객체의 메소드를 사용해서 질의 문자열을 추출할 수 있다.
+
+- **String getParameter(String name)**  
+  질의 문자열로 넘어온 값을 `하나씩` 추출할 때 사용한다.
+  
+- **String[] getParameterValues(String name)**  
+  같은 이름으로 `여러 개`의 변수가 전달되었을 때 한번에 `모든 값`을 추출한다.
+  
+- **String getQueryString()**  
+  클라이언트가 전달한 질의 문자열 `전체`를 추출한다.  
+  HTTP 요청정보의 URI 정보에서 ? 다음에 나오는 문자열들을 추출하므로 `GET` 방식에서만 사용할 수 있다.
+  
+- **ServletInputStream getInputStream() throws IOException**  
+  HTTP의 요청정보 몸체와 서블릿 프로그램 간에 연결된 `입력스트림`을 생성하여 반환한다.  
+  `POST` 방식의 질의 문자열 전체를 한번에 추출할 때 사용한다.
+  
+  ```java
+  ServletInputStream input = request.getInputStream();
+  int len = request.getContentLength();
+  byte[] buf = new byte[len];
+  input.readLine(buf, 0, len);
+  String s = new String(buf);
+  ```

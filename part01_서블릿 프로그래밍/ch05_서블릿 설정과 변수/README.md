@@ -152,7 +152,7 @@ public class Example extends HttpServlet {
 ```
 
 2개의 브라우저를 준비하고 하나는 GET 방식으로 msg값에 one을 넘기고  
-다른 하나는 GET 방식으로 msg값에 two을 넘기면 각각 str 값은 one과 two가 된다.
+다른 하나는 GET 방식으로 msg값에 two을 넘기면 각각 str 값은 one과 two가 된다.  
 즉, 지역변수 str은 클라이언트 간에 서로 영향을 받지 않고 `독립적`으로 사용이 가능하다.
 
 <br/>
@@ -172,5 +172,5 @@ public class Example extends HttpServlet {
 ```
 
 2개의 브라우저를 준비하고 하나는 GET 방식으로 msg값에 one을 넘기고  
-다른 하나는 GET 방식으로 msg값에 two을 넘기면 str 값은 one이 였다가 two가 된다.
+다른 하나는 GET 방식으로 msg값에 two을 넘기면 str 값은 one이 였다가 two가 된다.  
 즉, 멤버변수 str은 클라이언트별로 서로 `공유`된다.

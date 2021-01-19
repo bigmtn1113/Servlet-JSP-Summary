@@ -157,3 +157,30 @@ public class Example extends HttpServlet {
 
 getContextPath()는 웹 애플리케이션을 찾아가기 위해 사용하는 경로를 반환한다.  
 getServletContextName()은 web.xml에 `<display-name>`와 `</display-name>`사이에 지정되어 있는 웹 애플리케이션 이름을 반환한다.
+
+<br/>
+
+### 6.2.4. 웹 애플리케이션 단위 정보 공유
+- **void setAttribute(String name, Object value)**  
+  웹 애플리케이션 범위에서 공유할 데이터를 ServletContext 객체에 `등록`하는 메소드이다.  
+  첫 번째 인자는 등록하는 `데이터의 이름`, 두 번째 인자는 공유하기 위해 등록하는 `데이터`이다.
+  ```java
+  // ShareObject 클래스가 있다고 가정하자.
+  ShareObject obj = new ShareObject();
+  servletContext.setAttribute("data", obj);
+  ```
+  
+- **Object getAttribute(String name)**  
+  ServletContext 객체에 등록한 데이터를 `추출`하는 메소드이다.  
+  인자값으로 찾으려는 데이터의 등록된 이름을 지정하면 동일한 이름으로 등록된 데이터를 찾아서 값을 반환한다.  
+  `반환 값이 Object`이니 데이터를 추출한 다음에는 항상 원래 데이터 타입으로 `캐스팅`해야 한다.
+  ```java
+  ShareObject obj = (ShareObject) servletContext.getAttribute("data");
+  ```
+
+- **void removeAttribute(String name)**  
+  ServletContext 객체에 등록한 데이터를 `삭제`한다.  
+  인자값으로 샂게할 데이터의 등록된 이름을 지정한다.
+  ```java
+  servletContext.removeAttribute("data");
+  ```

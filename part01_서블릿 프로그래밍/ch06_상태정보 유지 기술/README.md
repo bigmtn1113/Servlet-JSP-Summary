@@ -91,3 +91,50 @@ ServletContext는 서블릿 컨테이너와 통신하기 위해서 사용되는 
   
   상속관계는 ServletConfig - GenericServlet - HttpServlet - Example 이렇게 이루어져 있다.  
   GenericServlet이 ServletConfig의 메소드들을 재정의 했으므로 Example에서 getServletConfig()를 사용할 수 있다.
+
+<br/>
+
+### 6.2.2. ServletContext 변수
+ServletContext 객체가 갖고 있는 변수는 동일한 웹 애플리케이션에 속한 모든 페이지에서 사용할 수 있는 글로벌한 변수이다.
+
+**ServletContext 변수 설정**  
+**web.xml**
+```xml
+<context-param>
+  <param-name>testName</param-name>
+  <param-value>testValue</param-value>
+</context-param>
+
+<servlet>
+  ...
+```
+
+**ServletContext 변수 추출**  
+```java
+  public class Example extends HttpServlet {
+    public void doGet(..., ...) throws ... {
+      ServletContext sc = this.getServletContext();
+      String value = sc.getInitParameter("testName");
+    }
+  }
+```
+
+**`<context-param>` 태그의 실제 사용 용도**  
+웹서버가 사용하는 환경설정 파일은 `web.xml`이지만 서비스 처리를 위해서는 각 페이지 수준의 환경설정 파일들도 읽어들이도록 설정해야 한다.
+환경설정 파일들은 서버의 웹 애플리케이션 `서비스 시작과 동시에` 읽어 들여야 한다.
+
+따라서 웹 애플리케이션 서비스 시작과 동시에 생성되는 ServletContext 객체에 `환경설정 파일`들에 대한 정보를 변수로 전달하고,
+실제 환경설정을 하는 페이지에서는 ServletContext 객체를 통해 전달받은 변수를 사용해 환경설정 파일을 찾아가 설정 작업을 진행한다.
+
+```xml
+<context-param>
+  <param-name>contextConfigLocation</param-name>
+  <param-value>
+    /WEB-INF/presentation_layer.xml,
+    /WEB-INF/service_layer.xml,
+    /WEB-INF/persistent.xml,
+  </param-value>
+</context-param>
+```
+
+환경설정 파일들을 읽어 들여 처리하는 객체의 값을 추출한 후 콤마(,)를 구분자로 문자열을 나눈 다음 각 파일에 대한 정보를 얻어서 처리한다.

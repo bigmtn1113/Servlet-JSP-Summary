@@ -54,7 +54,7 @@ HTTP는 `무연결`과 `무상태`로 동작하는 프로토콜이라 이전 연
 <br/>
 
 ## 6.2. ServletContext
-웹 애플리케이션 단위로 서비스하는 웹서버에서 `서블릿 컨테이너`는 웹 애플리케이션 단위로 Context를 생성하여 관리한다.  
+웹 애플리케이션 단위로 서비스하는 웹서버에서 `서블릿 컨테이너`는 웹 애플리케이션 단위로 `Context`를 생성하여 관리한다.  
 이 Context가 `ServletContext` 객체다.
 
 ### 6.2.1. ServletContext 생성
@@ -138,3 +138,22 @@ ServletContext 객체가 갖고 있는 변수는 동일한 웹 애플리케이�
 ```
 
 환경설정 파일들을 읽어 들여 처리하는 객체의 값을 추출한 후 콤마(,)를 구분자로 문자열을 나눈 다음 각 파일에 대한 정보를 얻어서 처리한다.
+
+<br/>
+
+### 6.2.3. 서버 정보 추출
+웹 애플리케이션 단위로 만들어진 ServletContext 객체를 통해 웹 애플리케이션에 관한 정보를 추출할 수 있다.
+
+```java
+public class Example extends HttpServlet {
+  public void doGet(..., ...) throws ... {
+    ServletContext sc = this.getServletContext();
+    
+    String contextPath = sc.getContextPath(); // 웹 애플리케이션 경로
+    String servletContextName = sc.getServletContextName(); // 웹 애플리케이션 경로
+  }
+}
+```
+
+getContextPath()는 웹 애플리케이션을 찾아가기 위해 사용하는 경로를 반환한다.  
+getServletContextName()은 web.xml에 `<display-name>`와 `</display-name>`사이에 지정되어 있는 웹 애플리케이션 이름을 반환한다.

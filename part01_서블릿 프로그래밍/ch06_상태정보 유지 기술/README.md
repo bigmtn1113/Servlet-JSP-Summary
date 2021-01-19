@@ -180,7 +180,7 @@ getServletContextName()은 web.xml에 `<display-name>`와 `</display-name>`사�
 
 - **void removeAttribute(String name)**  
   ServletContext 객체에 등록한 데이터를 `삭제`한다.  
-  인자값으로 삭게할 데이터의 등록된 이름을 지정한다.
+  인자값으로 삭제할 데이터의 등록된 이름을 지정한다.
   ```java
   servletContext.removeAttribute("data");
   ```

@@ -150,7 +150,7 @@ public class Example extends HttpServlet {
     ServletContext sc = this.getServletContext();
     
     String contextPath = sc.getContextPath(); // 웹 애플리케이션 경로
-    String servletContextName = sc.getServletContextName(); // 웹 애플리케이션 경로
+    String servletContextName = sc.getServletContextName(); // 웹 애플리케이션 이름
   }
 }
 ```
@@ -180,7 +180,7 @@ getServletContextName()은 web.xml에 `<display-name>`와 `</display-name>`사�
 
 - **void removeAttribute(String name)**  
   ServletContext 객체에 등록한 데이터를 `삭제`한다.  
-  인자값으로 샂게할 데이터의 등록된 이름을 지정한다.
+  인자값으로 삭게할 데이터의 등록된 이름을 지정한다.
   ```java
   servletContext.removeAttribute("data");
   ```

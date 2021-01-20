@@ -328,3 +328,82 @@ session.setAttribute("msg", "메시지");   // 세션 등록하기.
 session.removeAttribute("msg");   // session에 등록된 객체 중에서 msg로 지정된 객체 삭제하기.
 session.invalidate();   // 세션 삭제하기
 ```
+
+<br/>
+
+## 6.5. HttpServletRequest
+클라이언트가 요청한 페이지가 실행되다가 다른 페이지로 이동하는 것을 `요청 재지정`이라고 한다.  
+즉, 클라이언트로부터의 요청에 대하여 서버에 존재하는 다른 자원으로 요청을 재지정하는 것이다.
+
+이때 클라이언트에서는 서버에 보낸 요청을 다른 자원으로 재지정하는 것을 알 수 없다.  
+`클라이언트 모르게` 서버에서 요청을 재지정하기 때문이다.
+
+### 6.5.1. HttpServletResponse 요청 재지정
+HttpServletResponse 객체에서 제공하는 메소드를 사용하여 요청 재지정할 때는 요청을 재지정하는 자원이 현재 자원과
+`동일한 웹 애플리케이션에 속하지 않아도` 상관없고, `동일한 서버에 존재하지 않아도` 상관없다.
+
+- **public void sendRedirect(String location)**  
+  location에 설정된 자원으로 요청을 재지정한다.
+
+  ```java
+  response.sendRedirect("https://www.naver.com");
+  ```
+
+<br/>
+
+### 6.5.2. RequestDispatcher 요청 재지정
+HttpServletResponse 객체에서 제공하는 메소드를 사용하여 요청 재지정할 때는 요청을 제지정하는 자원이 반드시
+`현재 자원과 동일한 웹 애플리케이션`에 있어야만 한다.
+
+- **RequestDispatcher 객체 생성**  
+  인터페이스인 RequestDispatcher 객체를 생성할 때는 다음과 같이 `팩토리 메소드`를 사용한다.
+  - **ServletContext 객체에서 제공하는 메소드**  
+    - RequestDispatcher getNamedDispatcher(String name)
+    - RequestDispatcher getRequestDispatcher(String path)
+  - **ServletRequest 객체에서 제공하는 메소드**
+    - RequestDispatcher getRequestDispatcher(String path)
+
+  인자값을 path나 name 어떤 것으로 지정하는가만 다를 뿐 대상을 지정하면서 RequestDispatcher 객체를 추출하는 기능은 같다.  
+  다만, `ServletRequest` 객체의 getRequestDispatcher()에서 path를 지정할 때 절대 경로뿐만 아니라 상대 경로도 가능하지만,  
+  `ServletContext` 객체의 팩토리 메소드에서는 `절대 경로만 지정`할 수 있다.
+
+- **forward(ServletRequest request, ServletResponse response)**  
+  RequestDispatcher 객체의 forward()는 클라이언트의 요청으로 생성되는 HttpServletRequest와 HttpServletResponse 객체를
+  다른 자원에 전달하고 `수행 제어를 완전히 넘겨서` 다른 자원의 수행 결과를 클라이언트로 응답하는 기능의 메소드이다.
+
+  **forward() 메소드의 수행 흐름**  
+  client -> 요청 -> 요청 페이지 ->  RequestDispatcher의 forward() -> 포워딩 페이지 -> 응답 -> client
+
+  ```java
+  RequestDispatcher rd = servletContext.getRequestDispatcher("/forwardingPage");
+  rd.forward(request, response);
+  ```
+
+- **include(ServletRequest request, ServletResponse response)**  
+  RequestDispatcher 객체의 include()는 클라이언트의 요청으로 생성되는 HttpServletRequest와 HttpServletResponse 객체를
+  다른 자원에 전달하고 수행한 다음, 그 결과를 클라이언트에서 요청한 `서블릿 내에 포함하여` 클라이언트로 응답하는 기능의 메소드이다.
+
+  **include() 메소드의 수행 흐름**  
+  client -> 요청 -> 요청 페이지 -> RequestDispatcher의 include() -> include 페이지 -> 돌아옴 -> 요청 페이지 -> 응답 -> client
+
+  ```java
+  RequestDispatcher rd = servletContext.getRequestDispatcher("/includePage");
+  rd.include(request, response);
+  ```
+
+- **Request 단위 정보 공유**  
+  forward()나 include() 메소드를 이용해 다른 페이지로 이동할 때는 현재 페이지가 사용하는 HttpServletRequest와 HttpServletResponse 객체를
+  `그대로 전달`하면서 이동하므로 이전 페이지나 이동한 페이지나 `같은 객체`를 사용한다. 그래서 한 번의 요청으로 실행된 페이지끼리
+  정보를 공유하고자 할 때 `HttpServletRequest를 통해 공유`할 수 있다.
+
+  ```java
+  // page1
+  request.setAttribute("nowPage", "page1");
+
+  RequestDispatcher rd = servletContext.getRequestDispatcher("page2");
+  rd.forward(request, response);
+  ```
+  ```java
+  //page2
+  String nowPage = (String) request.getAttribute("nowPage");
+  ```

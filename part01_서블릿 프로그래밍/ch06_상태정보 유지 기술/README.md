@@ -265,3 +265,66 @@ for (int i = 0; list != null && i < list.length; i++) {
   String value = list[i].getValue();
 }
 ```
+
+<br/>
+
+## 6.4. 세션(Seesion)
+HTTP 기반으로 동작하는 클라이언트가 서버에 정보를 요청할 때 생성되는 `"상태정보"`를 세션이라 한다.
+
+HttpSession 객체는 서버에 생성되며, 클라이언트에는 세션 ID가 쿠키 기술로 저장되어 각 클라이언트에 대하여  
+생성되는 HttpSession 객체를 클라이언트마다 개별적으로 유지 및 관리한다.
+
+**세션 트래킹(session tracking)**  
+클라이언트마다 상태정보를 일정 시간 동안 개별적으로 유지하여 사용하는 기술
+1. 이전에 클라이언트를 위해 생성된 세션이 이미 존재하면 `존재하는 세션`을 추출하고 아니면 `새로 생성`한다.  
+  세션이 새로 생성될 때는 `고유한 ID`가 하나 부여되며, 이 ID는 클라이언트에 `쿠키` 기술로 저장된다.  
+  
+2. 유지하고자 하는 정보를 저장할 목적의 객체를 생성하여 `세션에 등록`한다.  
+
+3. 클라이언트가 요청을 전달할 때마다 세션에 등록된 정보를 담고 있는 `객체를 추출`하여 원하는 기능에 사용한다.  
+
+4. 세션이 더 이상 필요없는 시점에서 `세션을 삭제`한다.
+
+### 6.4.1. HttpSession 생성
+- **HttpServletRequest의 getSession()**  
+  클라이언트가 갖고 있는 `세션 ID와 동일한 세션 객체`를 찾아서 주솟값을 반환한다.  
+  만일 세션이 존재하지 않으면 새로운 HttpSession `객체를 생성`하여 반환한다.
+
+- **HttpServletRequest의 getSession(boolean create)**  
+  클라이언트가 갖고 있는 `세션 ID와 동일한 세션 객체`를 찾아서 주솟값을 반환한다.  
+  만일 세션이 존재하지 않으면 인자값의 값이 true인지 false인지에 따라 다르게 동작한다.
+  - **true**: 새로운 HttpSession 객체를 생성하여 반환한다.
+  - **false**: 새로운 HttpSession 객체를 생성하지 않고 `null`을 반환한다.
+
+<br/>
+
+### 6.4.2. HttpSession 메소드
+- **public Object getAttribute(String name)**  
+  HttpSession 객체에 등록된 정보 중 인자값으로 지정된 데이터의 값을 반환한다.
+
+- **public Enumeration getAttributeNames()**  
+  HttpSession 객체에 등록되어 있는 모든 정보의 이름만 반환한다.
+
+- **public void invalidate()**  
+  현재의 세션을 삭제한다.
+
+- **public boolean isNew()**  
+  서버 측에서 새로운 HttpSession 객체를 생성한 경우에는 true를, 아니면 false를 반환한다.
+
+- **public void setAttribute(String name, Object value)**  
+  HttpSession 객체에 name으로 지정된 이름으로 value 값을 등록한다.
+
+- **public void removeAttribute(String name)**  
+  HttpSession 객체에서 name으로 지정된 객체를 삭제한다.
+
+```java
+HttpSession session = request.getSession();   // 세션 얻기.
+session = request.getSession(false);   // 세션 얻기. 기존 세션이 존재하면 null 반환.
+session = request.getSession(true);   // 세션 얻기. getSession()과 동일.
+
+boolean isNew = session.isNew();    // 새로운 세션 여부 파악하기.
+
+session.setAttribute("msg", "메시지");   // 세션 등록하기.
+session.removeAttribute("msg");   // session에 등록된 객체 중에서 msg로 지정된 객체 삭제하기.
+session.invalidate();   // 세션 삭제하기
+```

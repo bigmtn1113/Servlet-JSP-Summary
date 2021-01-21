@@ -311,5 +311,5 @@ Connection conn = ds.getConnection();
 - **ic.lookup()**  
   리소스를 찾은 후 리소스를 사용할 수 있도록 객체를 반환하는 메소드이다.
   
-  jdbc/myoracle는 리소스 이름이고, java:comp/env는 톰캣에서 리소스를 관리하는 가상 디렉터리의 경로이다.  
+  `jdbc/myoracle`는 리소스 이름이고, `java:comp/env`는 톰캣에서 리소스를 관리하는 가상 디렉터리의 경로이다.  
   톰캣을 사용할 때는 리소스 이름 앞에 디렉터리 경로를 지정해 주어야 한다.

@@ -212,3 +212,104 @@ rs.close() -> stmt.close() 또는 pstmt.close() -> conn.close()
   이용할 수 있게 하는 개념이다.
   
   ex) DNS 서버는 실제 인터넷 서비스를 수행해주는 곳이 아니라, 단지 도메인과 IP 주소만을 연결해주는 기능을 한다.
+
+<br/>
+
+### 11.2.2. 구현
+- **server.xml 설정**  
+  Connection Pool은 서버에서 관리하는 자원이다. 그래서 서버 환경설정 파일인 `server.xml`에서 설정한다.  
+  설정한 내용에 따라 서버가 시작하면서 리소스 준비 작업이 이루어진다.
+  
+  ```xml
+  <GlobalNamingResources>
+    <Resource driverClassName="oracle.jdbc.driver.OracleDriver"
+              url="jdbc:oracle:thin:@127.0.0.1:1521:xe"
+              username="scott"
+              password="tiger"
+              name="jdbc/myoracle"
+              type="javax.sql.DataSource"
+              maxActive="4"
+              maxIdle="2"
+              maxWait="5000" />
+  </GlobalNamingResources>
+  ```
+  
+  - **driverClassName**  
+    DB 작업을 위해 로딩할 JDBC 드라이버 파일에 드라이버 인터페이스를 상속하는 파일명을 전체 이름으로 지정한다.  
+    Class.forName() 메소드의 인자값이다.
+    
+  - **url**  
+    접속할 DB 서버의 URL을 지정한다.
+    
+  - **username**  
+    DB 서버에 로그인할 계정을 지정한다.
+    
+  - **password**  
+    DB 서버에 로그인할 계정의 비밀번호를 지정한다.
+    
+  - **name**  
+    현재 리소스를 등록할 이름을 지정한다.
+    
+  - **type**  
+    리소스의 타입을 지정한다.  
+    Connection Pool을 사용할 수 있도록 해주는 객체의 타입은 javax.sql.DataSource이다.
+    
+  - **maxActive**  
+    생성할 Connection 수를 지정한다.
+    
+  - **maxIdle**  
+    일반적으로 활용할 Connection 수를 지정한다.
+    
+  - **maxWait**  
+    Connection의 사용 요청이 있을 때 대기 시간을 지정한다.  
+    5000은 5초를 의미하며, 5초가 지난 후에도 Connection을 얻지 못하면 Exception이 발생한다.
+
+  서버에서의 설정은 server.xml에 Connection을 만들기 위해 정보를 설정한 후 `WAS_HOME/conf/context.xml`에 Connection Pool의 이름을 등록함으로써 완료된다.
+  
+  ```xml
+    ...
+    <ResourceLink global="jdbc/myoracle" name="jdbc/myoracle" type="javax.sql.DataSource" />
+  </Context>
+  ```
+  서버에 등록된 리소스를 웹 애플리케이션에서 찾아서 사용할 수 있도록 글로벌한 이름을 지정한다.
+  
+- **web.xml 설정**  
+  서버에서 관리하는 리소스를 웹 애플리케이션에서 사용하기 위해 `web.xml`에 사용할 리소스에 대한 정보를 지정해야 한다.
+  
+  ```xml
+  ...
+    <resource-ref>
+      <description>Oracle DataSource example</description>
+      <res-ref-name>jdbc/myoracle</res-ref-name>
+      <res-type>javax.sql.DataSource</res-type>
+      <res-auth>Container</res-auth>
+    </resource-ref>
+  ...
+  ```
+  
+  - **`<description>`**  
+    리소스에 대한 설명을 지정한다.
+    
+  - **`<res-ref-name>`**  
+    사용하고자 하는 리소스의 이름을 지정한다.
+    
+  - **`<res-type>`**  
+    사용하고자 하는 리소스의 타입을 지정한다.
+    
+  - **`<res-auth>`**  
+    리소스에 대한 권한이 누구인지 지정한다.
+
+```java
+InitialContext ic = new InitialContext();
+DataSource ds = (DataSource) ic.lookup("java:comp/env/jdbc/myoracle");
+Connection conn = ds.getConnection();
+```
+
+- **new InitialContext()**  
+  Connection Pool에 접근하려면 `JNDI` 서비스를 사용해야 하므로 JNDI 서버 역할을 하는 객체를 생성한다.
+  
+- **ic.lookup()**  
+  리소스를 찾은 후 리소스를 사용할 수 있도록 객체를 반환하는 메소드이다.
+  
+  jdbc/myoracle는 리소스 이름이고, java:comp/env는 톰캣에서 리소스를 관리하는 가상 디렉터리의 경로이다.  
+  톰캣을 사용할 때는 리소스 이름 앞에 디렉터리 경로를 지정해 주어야 한다.

@@ -55,8 +55,8 @@ JDBC 프로그램 - java.sql - JDBC 드라이버 - DB
 ### 11.1.3. 구현
 #### [1] JDBC 드라이버 로딩
 **static Class<?> forName(String className)**  
-준비된JDBC 드라이버를 사용할 수 있도록 메모리에 준비작업을 해주는 메소드이다.  
-인자값으로는 JDBC 드라이버 파일 안에서 드라이버 인터페이스를 상속하고 있는 클래스이름을 패키지 이름과 함께 명시한 값이 온다.
+준비된JDBC 드라이버를 사용할 수 있도록 `메모리`에 준비 작업을 해주는 메소드이다.  
+인자값으로는 JDBC 드라이버 파일 안에서 드라이버 인터페이스를 상속하고 있는 `클래스이름을 패키지 이름과 함께 명시`한 값이 온다.
 
 ```java
 Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -79,17 +79,17 @@ Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:
 xe - DB 이름
 
 **Connection**  
-DriverManager.getConnection()은 실제 자바 프로그램과 데이터베이스를 네트워크상에서 연결해주는 메소드이다.  
+DriverManager.getConnection()은 실제 `자바 프로그램`과 `데이터베이스`를 네트워크상에서 연결해주는 메소드이다.  
 연결에 성공하면 DB와 연결된 상태를 Connection 객체로 표현하여 반환한다.  
-Connection은 네트워크상의 연결 자체를 의미한다.
+Connection은 `네트워크상의 연결` 자체를 의미한다.
 
-자바 프로그램과 DB 사이에 연결된 길(road)이라고 생각하자.
+자바 프로그램과 DB 사이에 연결된 `길(road)`이라고 생각하자.
 
 #### [3] Statement 객체
-자바 프로그램은 DB 쪽으로 SQL 문을 전송하고, DB는 처리된 결과를 자바 프로그램 쪽으로 전달해야 하는데  
+자바 프로그램은 DB 쪽으로 `SQL 문`을 전송하고, DB는 `처리된 결과`를 자바 프로그램 쪽으로 전달해야 하는데  
 바로 이 역할을 하는 객체가 Statement이다.
 
-길을 통해 SQL 문과 처리 결과를 서로 전달해주는 트럭이라 생각하자.
+길을 통해 SQL 문과 처리 결과를 서로 전달해주는 `트럭`이라 생각하자.
 
 **Statement createStatement()**  
 Statement 객체를 생성하려면 Connection 객체에서 제공하는 createConnection() 메소드를 사용한다.  
@@ -104,7 +104,7 @@ SQL 문을 실행하기 위해 사용되는 메소드는 Statement 객체에서 
 - **int executeUpdate(String sql)**
 
 **ResultSet**  
-ResultSet은 executeQuery() 메소드에서 실행된 select 문의 결괏값을 갖고 있는 객체이다.
+ResultSet은 executeQuery() 메소드에서 실행된 `select 문의 결괏값`을 갖고 있는 객체이다.
 
 ```java
 ResultSet rs = stmt.executeQuery("select * from test");
@@ -117,8 +117,8 @@ aa | 11
 bb | 22
 | |
 
-ResultSet 객체의 특징은 내부적으로 위치를 나타내는 커서(cursor)라는 개념이 있다.  
-또한 ResultSet 객체는 select한 결과 레코드가 있든 없든 항상 시작 빈 행과 끝 빈 행을 가진다.
+ResultSet 객체의 특징은 내부적으로 위치를 나타내는 `커서(cursor)`라는 개념이 있다.  
+또한 ResultSet 객체는 select한 결과 레코드가 있든 없든 항상 `시작 빈 행`과 `끝 빈 행`을 가진다.
 
 - **void afterLast()**
 - **void beforeFirst()**
@@ -128,10 +128,33 @@ ResultSet 객체의 특징은 내부적으로 위치를 나타내는 커서(curs
 - **String getString(int columnIndex)**
 - **String getString(String columnLabel)**
 
-afterLast()는 커서를 끝 빈 행으로 위치시키며, beforeFirst()는 커서를 시작 빈 행으로 위치시키는 메소드이다.
+afterLast()는 `커서를 끝 빈 행`으로 위치시키며, beforeFirst()는 `커서를 시작 빈 행`으로 위치시키는 메소드이다.
 
 next()는 커서 다음에 레코드이 있는지를 판단하여 없으면 false를 반환하고, 있으면 true를 반환한 다음 커서를 다음 레코드로 이동시키는 메소드이다.
 
-getter 메소드듣은 모두 칼럼의 값을 추출하는 메소드이다. 사용할 땐 데이터 타입에 따라 getter 메소드를 선택하면 된다.
+getter 메소드듣은 모두 `칼럼의 값을 추출`하는 메소드이다. 사용할 땐 데이터 타입에 따라 getter 메소드를 선택하면 된다.
 int 타입으로 추출하고자 하면 getInt() 메소드를 사용하면 된다. getter 메소드의 인자값으로는 칼럼의 이름을 지정할 수도 있고,
 칼럼의 인덱스값을 지정할 수도 있다.
+
+#### [4] PreparedStatement 객체
+Statement 객체와 같은 기능을 수행하는 객체이나 생성 시 실행할 SQL 문을 `? 기호`와 함께 작성할 수 있다는 것이 특징이다.  
+동적으로 값을 할당할 때 ? 기호를 사용하면 `가독성`과 `유지 보수성`이 좋다.
+
+```java
+/* Statement 사용 */
+Statement stmt = conn.createStatement();
+stmt.executeUpdate("insert into test values ('cc', '33')");
+
+/* PreparedStatement 사용 */
+PreparedStatement pstmt = conn.prepareStatement("insert into test values (?, ?)");
+pstmt.setString(1, "cc");
+pstmt.setString(2, "33");
+pstmt.executeUpdate();
+```
+
+#### [5] 자원 해제
+**JDBC 프로그래밍 객체 생성 순서**  
+Connection(DB 연결 객체) -> Statement 또는 PreparedStatement(SQL 문 실행 객체) -> ResultSet(select 문 결과를 가지는 객체)
+
+**JDBD 프로그래밍 자원 해제 순서**  
+rs.close() -> stmt.close() 또는 pstmt.close() -> conn.close()

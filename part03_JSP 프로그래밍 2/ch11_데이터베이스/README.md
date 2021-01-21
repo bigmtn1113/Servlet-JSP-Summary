@@ -158,3 +158,57 @@ Connection(DB 연결 객체) -> Statement 또는 PreparedStatement(SQL 문 실�
 
 **JDBD 프로그래밍 자원 해제 순서**  
 rs.close() -> stmt.close() 또는 pstmt.close() -> conn.close()
+
+<br/>
+
+## 11.2. DataSource
+### 11.2.1. 개요
+- **Connection 관리**  
+  웹 프로그램은 동시에 여러 사용자에 의해 요청이 일어날 수 있는 특성이 있으므로 자원 배분과 응답 속도에 대하여  
+  `효율적`으로 구현해야 한다.
+  
+  그런데 웹 클라이언트로부터 요청이 있을 때마다 Connection을 얻기 위한 작업을 하면 문제점이 있다.
+  - **DB 프로그램에서 트랜잭션 처리와 Connection 관리는 시스템의 성능과 안전성에 큰 영향을 미친다.**
+  - **Connection 과정은 일정 시간이 필요한 부담되는 작업이다.**
+  - **불필요한 연결에 의한 서버 자원의 낭비를 발생한다.**
+  
+- **Connection Pool**  
+  Connection 객체를 프로그램이 실행될 때마다 생성하는 것이 아니라, 웹 애플리케이션이 서비스되기 전에 웹서버에서  
+  `미리 생성하여 준비`한 다음, 필요할 때 준비된 Connection을 가져와 사용함으로써 JDBC 프로그래밍의 문제점을 개선한 기술이다.
+  
+  Connection 객체는 서버가 시작할 때 서버에서 여러 개를 준비할 수 있다.  
+  이렇게 준비된 Connection 객체들을 갖고 있는 리소스를 `Connection Pool`이라 한다.
+  
+- **DataSource**  
+  Connection Pool에는 여러 개의 Connection 객체가 생성되어 운용되는데, 각각을 직접 웹 애플리케이션에서 이용하면  
+  `체계적인 관리`가 힘들게 되므로 DataSource라는 개념을 도입하여 사용하고 있다.
+  
+  DataSource라는 객체는 `Connection Pool을 관리`하는 목적으로 사용되는 객체로 웹 애플리케이션에서는 이 DataSource 객체를  
+  통해 Connection을 얻어오고 반납하는 등의 작업을 수행할 수 있다.  
+  이 DataSource 객체는 `JNDI Server`에 의해 웹 애플리케이션에 전달하는 방식을 따르고 있다.
+  
+  DataSource를 이용하지 않는 기존의 방식(DriverManager를 이용한 방식)은 내부적으로 `static한 필드`를 사용하기 때문에  
+  `스레드 환경`에서는 바람직하지 않다.
+  
+  **DataSource 이용방법**  
+  [1] JNDI Server에서 `lookup()` 메소드를 통해 DataSource 객체를 획득한다.  
+  [2] DataSource 객체의 getConnection() 메소드를 통해 Connection Pool에서 `Free 상태의 Connection`을 획득한다.  
+  [3] Connection 객체를 통한 DBMS 작업을 수행한다.  
+  [4] 모든 작업이 끝나면 DataSource 객체를 통해 Connection Pool에 Connection을 반납한다.
+  
+- **JNDI(Java Naming and Directory Interface)**  
+  `API`와 `SPI`로 이루어져 있으며, API는 애플리케이션에서 네이밍 혹은 디렉터리 서비스에 접근하는 데 사용하고  
+  SPI는 새로운 서비스를 개발할 때 사용된다.
+  
+  **Naming & Directory 서비스**  
+  `분산환경`은 네트워크로 연결된 수많은 컴퓨터에 `분산된 여러 자원이 하나의 시스템`으로 구성되며, 네트워크상에서  
+  어떤 하나의 애플리케이션이 필요한 자원을 찾고 획득하는 일은 가장 중요한 일 중 하나이다.
+  
+  이렇게 분산 컴퓨팅과 엔터프라이즈 컴퓨팅 환경에서의 자원 획득과 이용의 효율성을 위해 제공하는 서비스가 `Naming & Directory`이다.
+  
+  Naming & Directory 서비스는 실제 어떤 자원을 갖고 서비스한다는 의미가 아니라, 어떤 서버나 애플리케이션에서 분산환경에  
+  서비스하고자 하는 자원을 이 Naming & Directory 서버에 `이름값과 실제 자원을 연결하여 등록`하면,  
+  해당 자원을 이용하고자 하는 다른 애플리케이션에서 Naming & Directory 서버에 접근하여 이름값만을 갖고 자원을 연결하여  
+  이용할 수 있게 하는 개념이다.
+  
+  ex) DNS 서버는 실제 인터넷 서비스를 수행해주는 곳이 아니라, 단지 도메인과 IP 주소만을 연결해주는 기능을 한다.

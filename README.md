@@ -11,3 +11,5 @@
   - [6. 상태정보 유지 기술](https://github.com/kva231/Servlet-JSP-Summary/tree/master/part01_%EC%84%9C%EB%B8%94%EB%A6%BF%20%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/ch06_%EC%83%81%ED%83%9C%EC%A0%95%EB%B3%B4%20%EC%9C%A0%EC%A7%80%20%EA%B8%B0%EC%88%A0)
 - [03. JSP 프로그래밍 2](https://github.com/kva231/Servlet-JSP-Summary/tree/master/part03_JSP%20%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D%202)
   - [11. 데이터베이스](https://github.com/kva231/Servlet-JSP-Summary/tree/master/part03_JSP%20%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D%202/ch11_%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4)
+- [04. MVC 기반 웹 프로젝트](https://github.com/kva231/Servlet-JSP-Summary/tree/master/part04_MVC%20%EA%B8%B0%EB%B0%98%20%EC%9B%B9%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8)
+  - [15. 웹 애플리케이션 디자인 패턴](https://github.com/kva231/Servlet-JSP-Summary/tree/master/part04_MVC%20%EA%B8%B0%EB%B0%98%20%EC%9B%B9%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/ch15_%EC%9B%B9%20%EC%95%A0%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98%20%EB%94%94%EC%9E%90%EC%9D%B8%20%ED%8C%A8%ED%84%B4)

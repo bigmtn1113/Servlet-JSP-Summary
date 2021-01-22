@@ -352,7 +352,7 @@ HttpServletResponse 객체에서 제공하는 메소드를 사용하여 요청 �
 <br/>
 
 ### 6.5.2. RequestDispatcher 요청 재지정
-HttpServletResponse 객체에서 제공하는 메소드를 사용하여 요청 재지정할 때는 요청을 제지정하는 자원이 반드시
+RequestDispatcher 객체에서 제공하는 메소드를 사용하여 요청 재지정할 때는 요청을 제지정하는 자원이 반드시
 `현재 자원과 동일한 웹 애플리케이션`에 있어야만 한다.
 
 - **RequestDispatcher 객체 생성**  

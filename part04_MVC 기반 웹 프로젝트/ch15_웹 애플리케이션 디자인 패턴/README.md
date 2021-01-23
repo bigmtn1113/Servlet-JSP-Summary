@@ -180,3 +180,63 @@ DAO 객체 역시 POJO로 작성한다.
 `ORM(Object-Relational Mapping)` 프레임워크라고도 부르는 영속 프레임워크로서 자바 객체와 데이터베이스의 데이터를
 객체 지향으로 매핑하여 데이터를 처리하므로 엔터프라이즈 개발 환경에 적합하다.
 그러나 객체 모델링에 관한 충분한 경험이 없다면 사용하기 어렵다는 특징이 있다.
+
+<br/>
+
+## 15.3. 프런트 컨트롤러 디자인 패턴
+하나의 웹 애플리케이션에는 많은 뷰와 많은 컨트롤러가 존재해서 각각의 뷰와 컨트롤러가 연결되어 독립적으로 실행되면,
+서버 입장에서는 현재 웹 애플리케이션 실행에 대하여 일괄적으로 처리하기가 어렵다.
+이런 구조에서는 뷰에서 들어오는 요청에 대하여 각각의 컨트롤러에서만 처리할 수 있으므로 수많은 뷰의 요청을 통제할 수 없다.
+
+이때 대표 컨트롤러(Front Controller)를 두고 뷰에서 들어오는 모든 요청을 담당하게 하면 웹 애플리케이션을 실행하는  
+모든 요청을 일괄적으로 처리할 수 있다. 이러한 구조를 `프런트 컨트롤러 디자인 패턴`이라고 한다.
+
+<br/>
+
+### 15.3.1. 프런트 컨트롤러 설정
+프런트 컨트롤러는 웹 애플리케이션의 `모든 요청에 우선으로 실행`되어야 한다.
+
+**[1] URL 패턴 지정**  
+웹 애플리케이션 개발 전에 클라이언트의 요청 URL에 `요청 패턴`을 지정한다.  
+일반적으로 요청되는 URL의 끝에 특정 단어를 붙이는데 `~.do`나 `~.action`과 같은 단어를 지정한다.
+
+```HTML
+<a href="memberInsert.do">회원가입</a>
+<a href="memberSearch.do">회원 정보 조회</a>
+<a href="memberUpdate.do">회원 정보 수정</a>
+<a href="memberDelete.do">회원 탈퇴</a>
+```
+
+<br/>
+
+**[2] 프런트 컨트롤러 등록**  
+모든 요청 URL 끝에 공통으로 .do가 들어오도록 구현했다면, 이 요청에 대응하여 실행할 `프런트 컨트롤러 클래스`를 생성한 후에
+`web.xml`에 등록하면 프런트 컨트롤러로서 동작한다.
+
+```xml
+<servlet>
+  <servlet-name>front</servlet-name>
+  <servlet-class>~~.FrontController</servlet-class>
+</servlet>
+
+<servlet-mapping>
+  <servlet-name>front</servlet-name>
+  <url-pattern>*.do</url-pattern>
+</servlet-mapping>
+```
+
+클라이언트로부터 전달되는 URL에 어떤 값이 들어와도, URL 끝부분이 .do로 끝나면 front 서블릿을 실행하라는 의미이다.
+
+<br/>
+
+### 15.3.2. 서브 컨트롤러 연결
+프런트 컨트롤러에서 일괄적으로 처리할 기능을 구현하고, 처리가 완료된 후에는 반드시 실제 요청한 서비스를 처리하는 컨트롤러가 실행되게 해야 한다.
+프런트 컨트롤러는 어떤 요청에 대하여 어떤 서브 컨트롤러가 실행되어야 핳는지에 대한 정보를 알고 있어야 한다.
+이러한 정보는 주로 `map` 객체에 저장하며 저장된 정보에서 서브 컨트롤러를 찾아서 실행한다.
+
+key | value
+---|---
+memberInsert.do | MemberInsert
+memberSearch.do | MemberSearch
+memberUpdate.do | MemberUpdate
+memberDelete.do | MemberDelete

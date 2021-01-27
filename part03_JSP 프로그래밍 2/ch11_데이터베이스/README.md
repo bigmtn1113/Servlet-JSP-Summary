@@ -166,6 +166,8 @@ pstmt.setString(2, "33");
 pstmt.executeUpdate();
 ```
 
+<br/>
+
 #### [5] 자원 해제
 **JDBC 프로그래밍 객체 생성 순서**  
 Connection(DB 연결 객체) -> Statement 또는 PreparedStatement(SQL 문 실행 객체) -> ResultSet(select 문 결과를 가지는 객체)
@@ -292,6 +294,8 @@ Connection Pool은 서버에서 관리하는 자원이다. 그래서 서버 환�
 </Context>
 ```
 서버에 등록된 리소스를 웹 애플리케이션에서 찾아서 사용할 수 있도록 글로벌한 이름을 지정한다.
+
+<br/>
 
 #### [2] web.xml 설정
 서버에서 관리하는 리소스를 웹 애플리케이션에서 사용하기 위해 `web.xml`에 사용할 리소스에 대한 정보를 지정해야 한다.

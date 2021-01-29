@@ -312,7 +312,7 @@ HttpSession 객체는 서버에 생성되며, 클라이언트에는 세션 ID가
 - **public Object getAttribute(String name)**  
   HttpSession 객체에 등록된 정보 중 인자값으로 지정된 데이터의 값을 반환한다.
 
-- **public Enumeration getAttributeNames()**  
+- **public Enumeration<String> getAttributeNames()**  
   HttpSession 객체에 등록되어 있는 모든 정보의 이름만 반환한다.
 
 - **public void invalidate()**  
